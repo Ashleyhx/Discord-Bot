@@ -1,4 +1,6 @@
+console.log("here1");
 const Discord = require('discord.js');
+console.log("here");
 const client = new Discord.Client();
 const auth = require('./auth.json');
 client.on('ready', () => {
