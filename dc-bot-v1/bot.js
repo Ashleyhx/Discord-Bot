@@ -1,7 +1,7 @@
-console.log("here1");
 const Discord = require('discord.js');
-console.log("here");
-const client = new Discord.Client();
+//const client = new Discord.Client();
+const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] })
+
 const auth = require('./auth.json');
 client.on('ready', () => {
  console.log(`Logged in as ${client.user.tag}!`);
