@@ -82,17 +82,18 @@ bot.on('message', message => {
                 const resource = createAudioResource(stream);
                 const GuildMember = message.author.id;
                 const connection = joinVoiceChannel({
-                   // channelId: GuildMember.voiceChannel,
-                   // guildId: message.guild.id,
-                   // adapterCreator: message.channel.guild.voiceAdatperCreator
                    channelId: message.channelId,
                    guildId: message.guildId,
                    adapterCreator: message.guild.voiceAdapterCreator            
                 })
-                connection.subscribe(bot);
-                bot.play(resource);
+               message.member.voice.channel.joinVoiceChannel(connection).then(connection => {
+                    console.log("Successfully connected.");
+                  }).catch(e => {
+                    console.error(e);
+                  });
+                //connection.subscribe(bot);
+               // bot.play(resource);
                 
-                console.log(generateDependencyReport());
                 // message.channel.join();
                // connectToChannel(message);
                 message.channel.send("[debug] success!");
