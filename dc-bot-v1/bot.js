@@ -7,6 +7,7 @@ import {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
+    NoSubscriberBehavior,
     generateDependencyReport,
 	entersState,
 	StreamType,
@@ -21,11 +22,11 @@ const Discord = require('discord.js');
 const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
 const ytdl = require("ytdl-core");
-//import * as ytdl from "ytdl-core";
+
 const PREFIX = '!';
 
 const token = 'OTgyMDMwNTE5ODUwMTE1MTMy.GdMN0C.e4I1rhW0q7dZBE1dlLFexdMVJw60oN5BgTmtbQ';
-    //require('./auth.json');
+
 
 var servers = {}; // store queue songs
 
@@ -42,11 +43,21 @@ bot.on('messageCreate', message => {
         break;
 
         case 'play':
-            //connection?
+            //connection? below function not working since a lot of ... is out of date
             /*function play(connection, message){
                 var server = servers[message.guild.id];
 
-                server.d
+                server.dispatcher = connection.playStream(ytdl(server.queue[0], {filter: 'audioonly'}));
+
+                server.queue.shift();
+
+                server.Discord.on("end", function(){
+                    if(server.queue[0]){
+                        play(connection, message);
+                    }else{
+                        connection.disconnect();
+                    }
+                });
             }*/
 
             if(!args[1]){
@@ -64,32 +75,33 @@ bot.on('messageCreate', message => {
             
             //let us use the var server to manage the servers in their queue
             var server = servers[message.guild.id];
-            //message.guild.VoiceConnectionStatus
-            /*var init = VoiceConnectionStatus({
-                channelId: message.member.voice.channel.id,
-                guildId: message.guild.id,
-               //adapterCreator: message.guild.voiceAdapterCreator            
-            });*/
-            //if(!init){
             if(message.member.voice.channel){
                 message.channel.send("[debug] you are in a voice channel");
                 const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
                 const stream = ytdl(url, {filter: 'audioonly'});
-                const player = createAudioPlayer();
+                const player = createAudioPlayer({
+                    behaviors: {
+                      noSubscriber: NoSubscriberBehavior.Pause
+                    }
+                  });
                 const resource = createAudioResource('voice-try/2.m4a');
-                //const GuildMember = message.author.id;
-                const connection = 
-                joinVoiceChannel({
+                const connection = joinVoiceChannel({
                     channelId: message.member.voice.channel.id,
                     guildId: message.guild.id,
                     adapterCreator: message.guild.voiceAdapterCreator            
                 });
-                //connection.subscribe(bot);
+               // connection.then(connection => {               
+                   // ;
+                //}).catch(console.error)
                 player.play(resource);
-                connection.subscribe(player);
-
-                message.channel.send("[debug] success!");
-                //message.channel.send("[debug] Now testing play feature");
+                connection.subscribe(player)
+                //player.on("error", (err) => {
+                    //queue.songs.shift();
+                    //processQueue(queue.songs[0], message);
+                //});
+                
+                
+                message.channel.send("[debug] run success!");
             }
             /* message.member.voice.channel.joinVoiceChannel().then(function(connection){
                 play(connection, message);
