@@ -33,7 +33,7 @@ bot.on('ready', () => {
  console.log(`Logged in as ${bot.user.tag}!`);
 });
 
-bot.on('message', message => {
+bot.on('messageCreate', message => {
     let args = message.content.substring(PREFIX.lenghth).split( " " );
     
     switch (args[0]){
@@ -76,7 +76,7 @@ bot.on('message', message => {
                 const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
                 const stream = ytdl(url, {filter: 'audioonly'});
                 const player = createAudioPlayer();
-                const resource = createAudioResource('voice-try/1.m4a');
+                const resource = createAudioResource('voice-try/2.m4a');
                 //const GuildMember = message.author.id;
                 const connection = 
                 joinVoiceChannel({
@@ -88,10 +88,7 @@ bot.on('message', message => {
                 player.play(resource);
                 connection.subscribe(player);
 
-                
-               // bot.play(resource);
-               // bot.pla
-                //message.channel.send("[debug] join success!");
+                message.channel.send("[debug] success!");
                 //message.channel.send("[debug] Now testing play feature");
             }
             /* message.member.voice.channel.joinVoiceChannel().then(function(connection){
