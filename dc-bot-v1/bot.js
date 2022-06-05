@@ -1,10 +1,6 @@
 import{
     connectToChannel,
 } from "./Functionality/VoiceChannel.js";
-import {
-    Client,
-    MessageAttachment
-} from "discord.js";
 import { createRequire } from "module";
 
 import {
@@ -20,10 +16,9 @@ import {
 
 const require = createRequire(import.meta.url);
 
-//require ('VoiceChannel.js');
-//const Discord = require('discord.js');
-//const client = new Discord.Client();
-const bot = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
+const Discord = require('discord.js');
+
+const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
 const ytdl = require("ytdl-core");
 //import * as ytdl from "ytdl-core";
@@ -44,10 +39,6 @@ bot.on('message', message => {
     switch (args[0]){
         case 'ping':
             message.channel.send("Pong!");
-            /*bot.sendMessage({
-                to: channelID,
-                message: 'Pong!'
-            });*/
         break;
 
         case 'play':
@@ -73,29 +64,21 @@ bot.on('message', message => {
             //let us use the var server to manage the servers in their queue
             var server = servers[message.guild.id];
 
-            //if(message.guild.voiceAdapterCreator)
             if(message.member.voice.channel){
                 message.channel.send("[debug] in a voice channel");
-                const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
-                const stream = ytdl(url, {filter: 'audioonly'});
+                //const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
+                //const stream = ytdl(url, {filter: 'audioonly'});
                 //const player = createAudioPlayer();
-                const resource = createAudioResource(stream);
-                const GuildMember = message.author.id;
-                const connection = joinVoiceChannel({
-                   channelId: message.channelId,
-                   guildId: message.guildId,
+                //const resource = createAudioResource(stream);
+                //const GuildMember = message.author.id;
+                //const connection = 
+                joinVoiceChannel({
+                    channelId: message.member.voice.channel.id,
+                    guildId: message.guild.id,
                    adapterCreator: message.guild.voiceAdapterCreator            
-                })
-               message.member.voice.channel.joinVoiceChannel(connection).then(connection => {
-                    console.log("Successfully connected.");
-                  }).catch(e => {
-                    console.error(e);
-                  });
+                });
                 //connection.subscribe(bot);
                // bot.play(resource);
-                
-                // message.channel.join();
-               // connectToChannel(message);
                 message.channel.send("[debug] success!");
             }
             /* message.member.voice.channel.joinVoiceChannel().then(function(connection){
