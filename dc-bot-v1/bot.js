@@ -19,7 +19,7 @@ const require = createRequire(import.meta.url);
 
 const Discord = require('discord.js');
 
-const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
+const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"] });
 
 const ytdl = require("ytdl-core");
 
@@ -84,17 +84,18 @@ bot.on('messageCreate', message => {
                       noSubscriber: NoSubscriberBehavior.Pause
                     }
                   });
-                const resource = createAudioResource('voice-try/2.m4a');
+                const resource = createAudioResource(stream);
                 const connection = joinVoiceChannel({
                     channelId: message.member.voice.channel.id,
                     guildId: message.guild.id,
                     adapterCreator: message.guild.voiceAdapterCreator            
                 });
-               // connection.then(connection => {               
-                   // ;
-                //}).catch(console.error)
-                player.play(resource);
-                connection.subscribe(player)
+                const ct = Promise.resolve(connection);
+                ct.then(connection => {               
+                    player.play(resource);
+                    connection.subscribe(player);
+                }).catch(console.error)
+               
                 //player.on("error", (err) => {
                     //queue.songs.shift();
                     //processQueue(queue.songs[0], message);
