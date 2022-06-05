@@ -42,10 +42,11 @@ bot.on('message', message => {
         break;
 
         case 'play':
-
+            //connection?
             /*function play(connection, message){
                 var server = servers[message.guild.id];
 
+                server.d
             }*/
 
             if(!args[1]){
@@ -63,23 +64,35 @@ bot.on('message', message => {
             
             //let us use the var server to manage the servers in their queue
             var server = servers[message.guild.id];
-
+            //message.guild.VoiceConnectionStatus
+            /*var init = VoiceConnectionStatus({
+                channelId: message.member.voice.channel.id,
+                guildId: message.guild.id,
+               //adapterCreator: message.guild.voiceAdapterCreator            
+            });*/
+            //if(!init){
             if(message.member.voice.channel){
-                message.channel.send("[debug] in a voice channel");
-                //const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
-                //const stream = ytdl(url, {filter: 'audioonly'});
-                //const player = createAudioPlayer();
-                //const resource = createAudioResource(stream);
+                message.channel.send("[debug] you are in a voice channel");
+                const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
+                const stream = ytdl(url, {filter: 'audioonly'});
+                const player = createAudioPlayer();
+                const resource = createAudioResource('voice-try/1.m4a');
                 //const GuildMember = message.author.id;
-                //const connection = 
+                const connection = 
                 joinVoiceChannel({
                     channelId: message.member.voice.channel.id,
                     guildId: message.guild.id,
-                   adapterCreator: message.guild.voiceAdapterCreator            
+                    adapterCreator: message.guild.voiceAdapterCreator            
                 });
                 //connection.subscribe(bot);
+                player.play(resource);
+                connection.subscribe(player);
+
+                
                // bot.play(resource);
-                message.channel.send("[debug] success!");
+               // bot.pla
+                //message.channel.send("[debug] join success!");
+                //message.channel.send("[debug] Now testing play feature");
             }
             /* message.member.voice.channel.joinVoiceChannel().then(function(connection){
                 play(connection, message);
