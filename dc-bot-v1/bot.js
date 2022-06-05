@@ -90,11 +90,12 @@ bot.on('messageCreate', message => {
                     guildId: message.guild.id,
                     adapterCreator: message.guild.voiceAdapterCreator            
                 });
-                const ct = Promise.resolve(connection);
+                player.play(resource);
+                connection.subscribe(player);
+               /* const ct = Promise.resolve(connection);
                 ct.then(connection => {               
-                    player.play(resource);
-                    connection.subscribe(player);
-                }).catch(console.error)
+                    
+                }).catch(console.error)*/
                
                 //player.on("error", (err) => {
                     //queue.songs.shift();
