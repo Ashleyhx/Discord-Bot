@@ -27,6 +27,25 @@ const PREFIX = '!';
 
 const token = 'OTgyMDMwNTE5ODUwMTE1MTMy.GdMN0C.e4I1rhW0q7dZBE1dlLFexdMVJw60oN5BgTmtbQ';
 
+const play = (connection, player, message) => {
+    console.log(player.state);
+    const server = servers[message.guild.id];
+    const url = server.queue[0];
+    const stream = ytdl(url, {filter: 'audioonly'});
+    const resource = createAudioResource(stream);
+    server.queue.shift();
+    console.log(player.state);
+
+    player.on(AudioPlayerStatus.Idle, () => {
+        console.log(player.state);
+        if (server.queue.length == 0) {
+            connection.disconnect();
+        } else {
+            player.play(resource);
+            play(connection, player, message);
+        }
+    });
+};
 
 var servers = {}; // store queue songs
 
@@ -70,31 +89,28 @@ bot.on('messageCreate', message => {
             }
             
             if(!servers[message.guild.id]) servers[message.guild.id] = {
-                queue: [] // important part 
+                queue: [], // important part 
+                player: createAudioPlayer({
+                    behaviors: {
+                      noSubscriber: NoSubscriberBehavior.Pause
+                    }
+                }),
             }
             
             //let us use the var server to manage the servers in their queue
             var server = servers[message.guild.id];
             if(message.member.voice.channel){
                 message.channel.send("[debug] you are in a voice channel");
-                const url = args[1];
-                //const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
-                const stream = ytdl(url, {filter: 'audioonly'});
-                const player = createAudioPlayer({
-                    behaviors: {
-                      noSubscriber: NoSubscriberBehavior.Pause
-                    }
-                  });
-                const resource = createAudioResource(stream);
+                server.queue.push(args[1]);
+                const player = servers[message.guild.id].player;
                 const connection = 
                 joinVoiceChannel({
                     channelId: message.member.voice.channel.id,
                     guildId: message.guild.id,
                     adapterCreator: message.guild.voiceAdapterCreator            
                 });
-                player.play(resource);
                 connection.subscribe(player);
-               
+                play(connection, player, message);
                 message.channel.send("[debug] run success!");
             }
 
