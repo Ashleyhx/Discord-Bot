@@ -77,7 +77,8 @@ bot.on('messageCreate', message => {
             var server = servers[message.guild.id];
             if(message.member.voice.channel){
                 message.channel.send("[debug] you are in a voice channel");
-                const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
+                const url = args[1];
+                //const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
                 const stream = ytdl(url, {filter: 'audioonly'});
                 const player = createAudioPlayer({
                     behaviors: {
@@ -85,36 +86,21 @@ bot.on('messageCreate', message => {
                     }
                   });
                 const resource = createAudioResource(stream);
-                const connection = joinVoiceChannel({
+                const connection = 
+                joinVoiceChannel({
                     channelId: message.member.voice.channel.id,
                     guildId: message.guild.id,
                     adapterCreator: message.guild.voiceAdapterCreator            
                 });
-                const ct = Promise.resolve(connection);
-                ct.then(connection => {               
-                    player.play(resource);
-                    connection.subscribe(player);
-                }).catch(console.error)
+                player.play(resource);
+                connection.subscribe(player);
                
-                //player.on("error", (err) => {
-                    //queue.songs.shift();
-                    //processQueue(queue.songs[0], message);
-                //});
-                
-                
                 message.channel.send("[debug] run success!");
             }
-            /* message.member.voice.channel.joinVoiceChannel().then(function(connection){
-                play(connection, message);
-            })*/
 
 
         break;
     }
-
-   /* if (msg.content === 'hello') {
-  msg.reply('hi!');
- }*/
  
 });
 bot.login(token);
