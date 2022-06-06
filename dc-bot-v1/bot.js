@@ -1,13 +1,12 @@
-import{
-    connectToChannel,
-} from "./Functionality/VoiceChannel.js";
 import { createRequire } from "module";
+import { playSong } from "./scripts/voiceChannel/playurl.js";
 
 import {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
     NoSubscriberBehavior,
+    dispatcher,
     generateDependencyReport,
 	entersState,
 	StreamType,
@@ -26,7 +25,6 @@ const ytdl = require("ytdl-core");
 const PREFIX = '!';
 
 const token = 'OTgyMDMwNTE5ODUwMTE1MTMy.GdMN0C.e4I1rhW0q7dZBE1dlLFexdMVJw60oN5BgTmtbQ';
-
 
 var servers = {}; // store queue songs
 
@@ -77,8 +75,9 @@ bot.on('messageCreate', message => {
             var server = servers[message.guild.id];
             if(message.member.voice.channel){
                 message.channel.send("[debug] you are in a voice channel");
+               // const url = args[1];
+                //playSong(message, url);
                 const url = args[1];
-                //const url = 'https://www.youtube.com/watch?v=NevKVKbCNy4&ab_channel=NTDM'
                 const stream = ytdl(url, {filter: 'audioonly'});
                 const player = createAudioPlayer({
                     behaviors: {
@@ -86,8 +85,7 @@ bot.on('messageCreate', message => {
                     }
                   });
                 const resource = createAudioResource(stream);
-                const connection = 
-                joinVoiceChannel({
+                const connection = joinVoiceChannel({
                     channelId: message.member.voice.channel.id,
                     guildId: message.guild.id,
                     adapterCreator: message.guild.voiceAdapterCreator            
@@ -97,7 +95,6 @@ bot.on('messageCreate', message => {
                
                 message.channel.send("[debug] run success!");
             }
-
 
         break;
     }
