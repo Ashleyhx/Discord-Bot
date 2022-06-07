@@ -45,15 +45,18 @@ const playQueue = (connection, player, message) => {
     //const p = new Promise(resolve => setTimeout(resolve, 60 * 1000));
 
      // new Promise(resolve => setTimeout(resolve, 60 * 1000));
-    async function sleep(ms) {
-        return new Promise((resolve) => {
-            setTimeout(resolve, ms);
-        });
-    } 
-    await sleep( 60 * 1000);
+     function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    sleep( 60*1000 );
     while (retry < limit) {
+        player.on(AudioPlayerStatus.Idle, () =>{
+            //break;
+            player.play(resource);
+        })
         player.on(AudioPlayerStatus.Playing, () =>{
-            await sleep(10 * 1000);//new Promise(resolve => setTimeout(resolve, 10 * 1000));
+            sleep(10 * 1000);//new Promise(resolve => setTimeout(resolve, 10 * 1000));
         });
         retry ++;
       }
@@ -146,11 +149,11 @@ bot.on('messageCreate', message => {
             playQueue(connection,player, message);
 
 //====== the current playlist ================
-/*
+
             message.channel.send("current queue is: ");
             for(let i = 0; i < 5 && i < server.queue.length ; i++){
                 message.channel.send(server.queue[i]);
-            }*/
+            }
 //==================================================
 
             message.channel.send("[debug] run success!");
