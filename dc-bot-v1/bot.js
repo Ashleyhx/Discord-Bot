@@ -1,12 +1,13 @@
+
 import { createRequire } from "module";
-import { playSong } from "./scripts/voiceChannel/playurl.js";
 
 import {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
+    AudioResource,
+    //playbackDuration,
     NoSubscriberBehavior,
-    dispatcher,
     generateDependencyReport,
 	entersState,
 	StreamType,
@@ -26,24 +27,58 @@ const PREFIX = '!';
 
 const token = 'OTgyMDMwNTE5ODUwMTE1MTMy.GdMN0C.e4I1rhW0q7dZBE1dlLFexdMVJw60oN5BgTmtbQ';
 
-const play = (connection, player, message) => {
-    console.log(player.state);
+const playQueue = (connection, player, message) => {
+
     const server = servers[message.guild.id];
     const url = server.queue[0];
+    console.log(url);
     const stream = ytdl(url, {filter: 'audioonly'});
     const resource = createAudioResource(stream);
-    server.queue.shift();
-    console.log(player.state);
+    console.log(resource.silencePaddingFrames);
+    //server.queue.shift();
+    player.on(AudioPlayerStatus.Playing, () => {
+        message.channel.send("a song is already playing!");
 
-    player.on(AudioPlayerStatus.Idle, () => {
-        console.log(player.state);
-        if (server.queue.length == 0) {
-            connection.disconnect();
-        } else {
-            player.play(resource);
-            play(connection, player, message);
-        }
     });
+    const limit = 30;
+    let retry = 0;
+    //const p = new Promise(resolve => setTimeout(resolve, 60 * 1000));
+
+     // new Promise(resolve => setTimeout(resolve, 60 * 1000));
+    async function sleep(ms) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        });
+    } 
+    await sleep( 60 * 1000);
+    while (retry < limit) {
+        player.on(AudioPlayerStatus.Playing, () =>{
+            await sleep(10 * 1000);//new Promise(resolve => setTimeout(resolve, 10 * 1000));
+        });
+        retry ++;
+      }
+    player.play(resource);
+    //player.play(resource); // will play directly
+    /*player.on(AudioPlayerStatus.Playing, () => {
+    //player.on("stateChange", async (oldState, newState) => {
+        console.log("here1");
+        if (oldState.status !== AudioPlayerStatus.Idle && newState.status === AudioPlayerStatus.Idle) {
+            console.log("here1");
+            if (server.queue.length == 0) {
+                connection.disconnect();
+            } else {
+                console.log("here1");
+                player.play(resource);
+                server.queue.shift();
+                playQueue(connection, player, message);
+            }
+        }
+
+
+        //player.play(resource);
+        //playQueue(connection, player, message);
+        
+    });*/
 };
 
 var servers = {}; // store queue songs
@@ -54,7 +89,7 @@ bot.on('ready', () => {
 
 bot.on('messageCreate', message => {
     let args = message.content.substring(PREFIX.lenghth).split( " " );
-    
+    //var server = servers[message.guild.id];
     switch (args[0]){
         case 'ping':
             message.channel.send("Pong!");
@@ -64,11 +99,8 @@ bot.on('messageCreate', message => {
             //connection? below function not working since a lot of ... is out of date
             /*function play(connection, message){
                 var server = servers[message.guild.id];
-
                 server.dispatcher = connection.playStream(ytdl(server.queue[0], {filter: 'audioonly'}));
-
                 server.queue.shift();
-
                 server.Discord.on("end", function(){
                     if(server.queue[0]){
                         play(connection, message);
@@ -95,25 +127,47 @@ bot.on('messageCreate', message => {
                     }
                 }),
             }
-            
-            //let us use the var server to manage the servers in their queue
             var server = servers[message.guild.id];
-            if(message.member.voice.channel){
-                message.channel.send("[debug] you are in a voice channel");
-                server.queue.push(args[1]);
-                const player = servers[message.guild.id].player;
+
+// Join the Voice Channel======================
+            //if( server.queue.lenghth == undefined ){
                 const connection = 
                 joinVoiceChannel({
                     channelId: message.member.voice.channel.id,
                     guildId: message.guild.id,
                     adapterCreator: message.guild.voiceAdapterCreator            
                 });
+                const player = servers[message.guild.id].player;
                 connection.subscribe(player);
-                play(connection, player, message);
-                message.channel.send("[debug] run success!");
-            }
+           //}
+//=======================================================
+
+            server.queue.push(args[1]);
+            playQueue(connection,player, message);
+
+//====== the current playlist ================
+/*
+            message.channel.send("current queue is: ");
+            for(let i = 0; i < 5 && i < server.queue.length ; i++){
+                message.channel.send(server.queue[i]);
+            }*/
+//==================================================
+
+            message.channel.send("[debug] run success!");
 
         break;
+/*
+        case 'queue':
+            if(server.queue.length == 0){
+                message.channel.send("Empty queue!");
+            }
+            else {
+                for(let i = 0; i < 5 && i < server.queue.length ; i++){
+                    message.channel.send(server.queue[i]);
+                }
+            }
+        break;
+        */
     }
  
 });
