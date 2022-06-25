@@ -1,12 +1,12 @@
 
 import { createRequire } from "module";
+import { Client } from "@notionhq/client";
 
 import {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
     AudioResource,
-    //playbackDuration,
     NoSubscriberBehavior,
     generateDependencyReport,
 	entersState,
@@ -15,11 +15,15 @@ import {
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
 
+    
 const require = createRequire(import.meta.url);
-
 const Discord = require('discord.js');
-
 const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"] });
+
+const notion = new Client({
+    auth: "secret_BKyXcMTM6Q1tKZsAk8NwS7cA0CUem1TlHWqBRntlSuh",
+});
+const databaseId = "43794525fe79492f9e4d1dc5eb5e1432";
 
 const ytdl = require("ytdl-core");
 
@@ -56,7 +60,7 @@ const playQueue = (connection, player, message) => {
             player.play(resource);
         })
         player.on(AudioPlayerStatus.Playing, () =>{
-            sleep(10 * 1000);//new Promise(resolve => setTimeout(resolve, 10 * 1000));
+            sleep(10 * 1000);
         });
         retry ++;
       }
@@ -75,14 +79,29 @@ const playQueue = (connection, player, message) => {
                 server.queue.shift();
                 playQueue(connection, player, message);
             }
-        }
-
-
-        //player.play(resource);
-        //playQueue(connection, player, message);
-        
+        }      
     });*/
 };
+
+export async function NotionEventsListener() {
+    const timeStamp = new Date().getTime();
+    const yesterdayTimeStamp = timeStamp - 24 * 60 * 60 * 1000;
+    const yesterdayDate = new Date(yesterdayTimeStamp);
+    const EditedItems = await notion.databases.query({
+        database_id: databaseId,
+        filter: {
+          timestamp: "last_edited_time",
+          last_edited_time: {
+            after: yesterdayDate.toISOString(),
+          },
+        },
+      });
+      //console.log(EditedItems.results);
+
+     return EditedItems.results;
+}
+
+//NotionEventsListener();
 
 var servers = {}; // store queue songs
 
@@ -90,12 +109,19 @@ bot.on('ready', () => {
  console.log(`Logged in as ${bot.user.tag}!`);
 });
 
-bot.on('messageCreate', message => {
+async function bot.on('messageCreate', message => {
     let args = message.content.substring(PREFIX.lenghth).split( " " );
     //var server = servers[message.guild.id];
     switch (args[0]){
         case 'ping':
             message.channel.send("Pong!");
+        break;
+
+        case 'notion':
+            let t = NotionEventsListener();
+            console.log(t);
+            message.channel.send("changed items in last 24 hours are:");
+            message.channel.send(EditedItems);
         break;
 
         case 'play':
@@ -174,4 +200,4 @@ bot.on('messageCreate', message => {
     }
  
 });
-bot.login(token);
+async function bot.login(token);
