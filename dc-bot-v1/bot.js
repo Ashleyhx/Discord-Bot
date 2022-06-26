@@ -96,7 +96,6 @@ export async function NotionEventsListener() {
           },
         },
       });
-      //console.log(EditedItems.results);
 
      return EditedItems.results;
 }
@@ -109,7 +108,7 @@ bot.on('ready', () => {
  console.log(`Logged in as ${bot.user.tag}!`);
 });
 
-async function bot.on('messageCreate', message => {
+bot.on('messageCreate', async message => {
     let args = message.content.substring(PREFIX.lenghth).split( " " );
     //var server = servers[message.guild.id];
     switch (args[0]){
@@ -118,10 +117,21 @@ async function bot.on('messageCreate', message => {
         break;
 
         case 'notion':
-            let t = NotionEventsListener();
-            console.log(t);
-            message.channel.send("changed items in last 24 hours are:");
-            message.channel.send(EditedItems);
+            let EditedItems = await NotionEventsListener();
+            message.channel.send("** Note! These items has been changed in last 24 hours: **");
+            let i = 0;
+            let EditorName = "";
+            let title = "";
+            while(i < EditedItems.length){
+                EditorName = EditedItems[i].properties["Last edit by"].last_edited_by.name;
+                title = EditedItems[i].properties["Title"].title[0]["text"];
+                message.channel.send(title);
+                message.channel.send("__*Last edit by:*__ " + EditorName);
+                message.channel.send("__*url:*__ " + EditedItems[i].url);
+                message.channel.send("--------------------------------------------------");
+                i++;
+            }
+           
         break;
 
         case 'play':
@@ -200,4 +210,4 @@ async function bot.on('messageCreate', message => {
     }
  
 });
-async function bot.login(token);
+bot.login(token);
