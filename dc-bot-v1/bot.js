@@ -15,15 +15,13 @@ import {
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
 
-    
+
 const require = createRequire(import.meta.url);
 const Discord = require('discord.js');
-//const client = new Discord.Client();
-const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] })
+const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"] });
 
-const auth = require('./auth.json');
-client.on('ready', () => {
- console.log(`Logged in as ${client.user.tag}!`);
+const notion = new Client({
+    auth: "secret_BKyXcMTM6Q1tKZsAk8NwS7cA0CUem1TlHWqBRntlSuh",
 });
 const databaseId = "43794525fe79492f9e4d1dc5eb5e1432";
 
@@ -209,4 +207,5 @@ bot.on('messageCreate', async message => {
     }
  
 });
-client.login(auth.token);
+
+bot.login(token);
