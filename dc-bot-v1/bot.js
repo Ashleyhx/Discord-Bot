@@ -1,6 +1,9 @@
 import { createRequire } from "module";
 import { Client } from "@notionhq/client";
-//var cron = require("cron");
+const require = createRequire(import.meta.url);
+
+var cron = require("cron");
+const Discord = require('discord.js');
 
 import {
 	joinVoiceChannel,
@@ -15,9 +18,6 @@ import {
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
 
-
-const require = createRequire(import.meta.url);
-const Discord = require('discord.js');
 const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"] });
 
 const notion = new Client({
@@ -95,7 +95,6 @@ export async function NotionEventsListener() {
           },
         },
       });
-
      return EditedItems.results;
 }
 
@@ -115,7 +114,7 @@ bot.on('messageCreate', async message => {
 
         case 'notion':
             let EditedItems = await NotionEventsListener();
-            message.channel.send("** Note! These items has been changed in last 24 hours: **");
+            message.channel.send("** Note! These tasks has been changed in last 24 hours: **");
             let i = 0;
             let EditorName = "";
             let title = "";
@@ -124,11 +123,11 @@ bot.on('messageCreate', async message => {
                 title = EditedItems[i].properties["Title"].title[0]["text"];
                 message.channel.send(title);
                 message.channel.send("__*Last edit by:*__ " + EditorName);
+                message.channel.send("__*Last edit by:*__ " + EditorName);
                 message.channel.send("__*url:*__ " + EditedItems[i].url);
                 message.channel.send("--------------------------------------------------");
                 i++;
-            }
-           
+            }           
         break;
 
         case 'play':
@@ -145,7 +144,6 @@ bot.on('messageCreate', async message => {
                     }
                 });
             }*/
-
             if(!args[1]){
                 message.channel.send("You need to provide a link!");
                 return;
@@ -164,18 +162,14 @@ bot.on('messageCreate', async message => {
                 }),
             }
             var server = servers[message.guild.id];
-
-// Join the Voice Channel======================
-            //if( server.queue.lenghth == undefined ){
-                const connection = 
-                joinVoiceChannel({
-                    channelId: message.member.voice.channel.id,
-                    guildId: message.guild.id,
-                    adapterCreator: message.guild.voiceAdapterCreator            
-                });
-                const player = servers[message.guild.id].player;
-                connection.subscribe(player);
-           //}
+            const connection = 
+            joinVoiceChannel({
+                channelId: message.member.voice.channel.id,
+                guildId: message.guild.id,
+                adapterCreator: message.guild.voiceAdapterCreator            
+            });
+            const player = servers[message.guild.id].player;
+            connection.subscribe(player);
 //=======================================================
 
             server.queue.push(args[1]);
@@ -207,5 +201,13 @@ bot.on('messageCreate', async message => {
     }
  
 });
+
+// let scheduledMessage = new cron.CronJob('00 41 10 * * *', () => {
+//     let channel = '982092867357012029';
+//     channel.send('You message');
+// });
+  
+// scheduledMessage.start()
+
 
 bot.login(token);
