@@ -21,15 +21,15 @@ import {
 const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"] });
 
 const notion = new Client({
-    auth: "secret_BKyXcMTM6Q1tKZsAk8NwS7cA0CUem1TlHWqBRntlSuh",
+    auth: "",
 });
-const databaseId = "43794525fe79492f9e4d1dc5eb5e1432";
+const databaseId = "";
 
 const ytdl = require("ytdl-core");
 
 const PREFIX = '!';
 
-const token = 'OTgyMDMwNTE5ODUwMTE1MTMy.GdMN0C.e4I1rhW0q7dZBE1dlLFexdMVJw60oN5BgTmtbQ';
+const token = '';
 
 const playQueue = (connection, player, message) => {
     const server = servers[message.guild.id];
